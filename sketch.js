@@ -1,11 +1,9 @@
 let handPose;
 let video;
 let hands = [];
-let tree = [];
-let trunkHeight = 150; // Altura del tronco
-let trunkWidth = 20;
-let branchLength = 60; // Longitud inicial de las ramas
-let branchAngle = 45; // Ángulo base de las ramas
+let nodes = [
+  { x: 640, y: 380, radius: 20, color: [139, 69, 19], parent: null }, // Nodo inicial (tronco)
+];
 let messages = [
   "¿Te sientes optimista hoy?",
   "¿Prefieres trabajar solo?",
@@ -27,8 +25,6 @@ let message =
   "Cada decisión que tomes hará crecer un árbol único. ¿Estás listo para comenzar?";
 let decisionStep = 0;
 let decisionMade = false;
-let delayTime = 1000; // Retraso entre acciones (en milisegundos)
-let lastActionTime = 0;
 
 function preload() {
   handPose = ml5.handPose();
@@ -36,11 +32,7 @@ function preload() {
 
 function gotHands(results) {
   hands = results;
-  if (
-    hands.length > 0 &&
-    !decisionMade &&
-    millis() - lastActionTime > delayTime
-  ) {
+  if (hands.length > 0 && !decisionMade) {
     processDecision(hands[0]);
   }
 }
@@ -62,29 +54,16 @@ function draw() {
   textAlign(CENTER);
   text(message, width / 2, 30);
 
-  // Dibujar el tronco
-  fill(139, 69, 19);
-  rect(960 - trunkWidth / 2, height - trunkHeight, trunkWidth, trunkHeight);
-
-  // Dibujar las ramas
-  for (let i = 0; i < tree.length; i++) {
-    let branch = tree[i];
-    drawBranch(branch.x, branch.y, branch.length, branch.angle, branch.color);
+  // Dibujar los nodos (círculos) del árbol
+  for (let node of nodes) {
+    drawNode(node.x, node.y, node.radius, node.color);
   }
 }
 
-function drawBranch(x, y, length, angle, color) {
-  let endX = x + length * cos(radians(angle));
-  let endY = y - length * sin(radians(angle));
-  stroke(color);
-  strokeWeight(2);
-  line(x, y, endX, endY);
-
-  if (length > 10) {
-    let newLength = length * 0.7;
-    drawBranch(endX, endY, newLength, angle + branchAngle, color);
-    drawBranch(endX, endY, newLength, angle - branchAngle, color);
-  }
+function drawNode(x, y, radius, color) {
+  fill(color);
+  noStroke();
+  ellipse(x, y, radius * 2, radius * 2); // Dibuja un círculo
 }
 
 function processDecision(hand) {
@@ -92,68 +71,77 @@ function processDecision(hand) {
   let indexFinger = keypoints[8];
   let thumb = keypoints[4];
 
-  // Verificar si el gesto es pulgar arriba con índice abajo (Sí)
   if (isThumbUp(thumb, indexFinger)) {
     handleYes();
-  }
-  // Verificar si el gesto es puño cerrado (No)
-  else if (isFist(keypoints)) {
+  } else if (isFist(keypoints)) {
     handleNo();
   }
 }
 
 function isThumbUp(thumb, indexFinger) {
-  return thumb.y < indexFinger.y; // Pulgar arriba con índice abajo
+  return thumb.y < indexFinger.y; // Pulgar arriba
 }
 
 function isFist(keypoints) {
-  return keypoints[5].y > keypoints[9].y && keypoints[17].y > keypoints[13].y; // Puño cerrado
+  return (
+    dist(keypoints[8].x, keypoints[8].y, keypoints[0].x, keypoints[0].y) < 30 &&
+    dist(keypoints[12].x, keypoints[12].y, keypoints[0].x, keypoints[0].y) <
+      30 &&
+    dist(keypoints[16].x, keypoints[16].y, keypoints[0].x, keypoints[0].y) <
+      30 &&
+    dist(keypoints[20].x, keypoints[20].y, keypoints[0].x, keypoints[0].y) < 30
+  ); // Puño cerrado
 }
 
 function handleYes() {
-  if (decisionStep < messages.length) {
-    let yOffset = height - trunkHeight - decisionStep * 10; // Desplazar ramas a lo largo del tronco
-    tree.push({
-      x: 960,
-      y: yOffset,
-      length: branchLength,
-      angle: random(30, 50), // Ángulo positivo hacia la derecha
-      color: "#00cc44", // Verde claro
-    });
-    nextQuestion();
-  }
+  addNode(30, [0, 200, 0]); // Nodo hacia la derecha (positivo)
+  nextQuestion();
 }
 
 function handleNo() {
-  if (decisionStep < messages.length) {
-    let yOffset = height - trunkHeight - decisionStep * 10; // Desplazar ramas a lo largo del tronco
-    tree.push({
-      x: 960,
-      y: yOffset,
-      length: branchLength,
-      angle: random(-50, -30), // Ángulo negativo hacia la izquierda
-      color: "#cc4444", // Rojo oscuro
+  addNode(-30, [200, 0, 0]); // Nodo hacia la izquierda (negativo)
+  nextQuestion();
+}
+
+function addNode(angleOffset, nodeColor) {
+  let parentNode = nodes[nodes.length - 1];
+  let newRadius = parentNode.radius * 0.7; // Los nodos se hacen más pequeños
+
+  if (newRadius > 5) {
+    // Evitar nodos demasiado pequeños
+    let endX =
+      parentNode.x + parentNode.radius * cos(radians(parentNode.angle));
+    let endY =
+      parentNode.y + parentNode.radius * sin(radians(parentNode.angle));
+
+    // Agregar nuevo nodo a la lista del árbol
+    nodes.push({
+      x: endX,
+      y: endY,
+      radius: newRadius,
+      angle: parentNode.angle + angleOffset, // Rotar el nodo según la respuesta
+      color: nodeColor,
+      parent: parentNode,
     });
-    nextQuestion();
   }
 }
 
 function nextQuestion() {
   decisionStep++;
-  lastActionTime = millis(); // Actualizamos el tiempo del último gesto
   if (decisionStep < messages.length) {
     message = messages[decisionStep];
-    decisionMade = false; // Ahora puede tomar otra decisión
+    decisionMade = false;
   } else {
     message = "El árbol está completo. ¡Gracias por participar!";
   }
 }
 
 function mousePressed() {
-  // Reset manual para pruebas
   decisionStep = 0;
   decisionMade = false;
   message =
     "Cada decisión que tomes hará crecer un árbol único. ¿Estás listo para comenzar?";
-  tree = [];
+  nodes = [
+    { x: 640, y: 380, radius: 20, color: [139, 69, 19], parent: null }, // Reiniciar el tronco
+  ];
 }
