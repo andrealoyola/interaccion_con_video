@@ -4,7 +4,7 @@ let hands = [];
 let tree = [];
 let trunkHeight = 150; // Altura del tronco
 let trunkWidth = 20;
-let branchLength = 50; // Longitud inicial de las ramas
+let branchLength = 60; // Longitud inicial de las ramas
 let branchAngle = 45; // Ángulo base de las ramas
 let messages = [
   "¿Te sientes optimista hoy?",
