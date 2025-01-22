@@ -34,7 +34,7 @@ function preload() {
   trunkImage = loadImage("tronco.png"); // Carga la imagen del tronco
 
   // Carga las imágenes de las ramas para "Sí"
-  for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 11; i++) {
     branchImagesYes.push(loadImage(`branch_yes_${i}.png`));
   }
 
@@ -111,7 +111,7 @@ function handleYes() {
   if (decisionStep < messages.length) {
     let yOffset = height - decisionStep * 84;
     tree.push({
-      x: width / 2 + 212, // Fija la posición de X a la derecha
+      x: width / 2 + 200, // Fija la posición de X a la derecha
       y: yOffset,
       image: random(branchImagesYes),
     });
