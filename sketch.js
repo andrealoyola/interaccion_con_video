@@ -16,15 +16,18 @@ let messages = [
   "¿Sientes que estás aprovechando al máximo tus talentos?",
   "¿Te sientes agradecido por lo que tienes en la vida?",
   "¿Te has perdonado por errores pasados?",
+  "¿Te sientes orgulloso de la persona en la que te has convertido?",
 ];
 let message =
   "Cada decisión que tomes hará crecer un árbol único. ¿Estás listo para comenzar?";
+
 let decisionStep = 0;
 let decisionMade = false;
 let delayTime = 1000;
 let lastActionTime = 0;
 let confetti = []; // Array para las partículas de confeti
 let customFont;
+let escala = 0.5; // para escalar imágenes
 
 function preload() {
   handPose = ml5.handPose();
@@ -33,7 +36,7 @@ function preload() {
   customFont = loadFont("fuente.ttf"); // Reemplaza con archivo fuente
 
   // Carga las imágenes de las ramas para "Sí"
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 1; i <= 8; i++) {
     branchImagesYes.push(loadImage(`branch_yes_${i}.png`));
   }
 
@@ -55,10 +58,10 @@ function gotHands(results) {
 }
 
 function setup() {
-  let canvas = createCanvas(1420, 1000);
+  let canvas = createCanvas(windowWidth * 0.8, windowHeight * 0.8); // Ajusta el tamaño del canvas
   canvas.position((windowWidth - width) / 2, (windowHeight - height) / 2);
   video = createCapture(VIDEO);
-  video.size(640, 480);
+  video.size(340, 280);
   video.hide();
   handPose.detectStart(video, gotHands);
 
@@ -76,61 +79,80 @@ function setup() {
 
 function draw() {
   background(255);
-  image(video, 50, 100, 500, 500);
+  image(video, 10, 50, 340, 280); // Reduce el tamaño del video
   fill(237, 237, 254);
-  rect(50, 650, 500, 300);
+  rect(10, 350, 340, 220); // Ajusta la posición y tamaño del recuadro de texto
 
   fill(0); // Color del texto
   noStroke();
   textFont(customFont); // Cambia el texto a la fuente personalizada
-  textSize(22);
+  textSize(14); // Ajusta el tamaño del texto
   textAlign(LEFT, CENTER);
   text(
-    "Reglas de la actividad: \nUsa movimientos de tus manos para \nresponder las preguntas de forma interactiva.\n \nPara responder SI \nLevanta el pulgar.\n \nPara responder NO \nCierra el puño, hacia el frente los nudillos.",
-    80,
-    800
+    "Reglas de la actividad: \nUsa movimientos de tus manos para responder \nlas preguntas de forma interactiva.\n \nPara responder SI \nLevanta el pulgar.\n \nPara responder NO \nCierra el puño, hacia el frente los nudillos.",
+    20,
+    460
   );
 
   // Muestra el texto en pantalla
   fill(64, 66, 64);
   noStroke();
-  textSize(28);
+  textSize(18);
   textAlign(LEFT);
-  text(message, 60, 43);
+  text(message, 20, 25);
 
   // Dibuja la imagen del tronco en la base del lienzo
-  let trunkWidth = trunkImage.width / 2; // Tamaño del tronco ajustado
-  let trunkHeight = trunkImage.height;
-  image(trunkImage, width - 1069 / 2 - trunkWidth / 2, height - trunkHeight);
-
+  let trunkWidth = trunkImage.width * escala; // Tamaño del tronco ajustado por la escala
+  let trunkHeight = trunkImage.height * escala; // Tamaño del tronco ajustado por la escala
+  image(
+    trunkImage,
+    width / 2 - trunkWidth + 200 / 2, // Centrado horizontalmente
+    height - trunkHeight, // Alineado con la base del lienzo, teniendo en cuenta la escala
+    trunkWidth, // Ajuste de escala en el ancho
+    trunkHeight // Ajuste de escala en el alto
+  );
   // Dibuja las ramas
   for (let i = 0; i < tree.length; i++) {
     let branch = tree[i];
-    image(branch.image, branch.x, branch.y);
+    image(
+      branch.image,
+      branch.x,
+      branch.y,
+      branch.image.width * escala,
+      branch.image.height * escala
+    );
   }
 
-  // Dibuja la copa del árbol si el árbol está completo
+  // Dibuja la copa del árbol si el árbol está completo (después de la última pregunta)
   if (decisionStep >= messages.length) {
-    let topWidth = treeTopImage.width - 750 / 2;
-    let topHeight = treeTopImage.height;
+    let topWidth = treeTopImage.width * escala; // Ajusta el tamaño de la copa según la escala
+    let topHeight = treeTopImage.height * escala;
 
-    // Calcula la posición para que el borde superior de la copa toque el borde superior del canvas
-    let topX = width / 2 - topWidth / 2;
-    let topY = 0; // Borde superior del canvas
+    // Calcula la posición Y para que la copa aparezca justo después de las ramas
+    let topY = height - trunkHeight - 130; // Coloca la copa encima del tronco
 
-    image(treeTopImage, topX, topY);
+    // Calcula la posición X para que esté centrada
+    let topX = width - 698 / 2 - topWidth;
+
+    image(
+      treeTopImage,
+      topX,
+      topY, // La copa del árbol aparece después del tronco
+      topWidth,
+      topHeight
+    );
 
     fill(199, 0, 57); // Color de fondo del recuadro
-    rect(300, 250, 820, 500); // Dibuja el recuadro con bordes redondeados
+    rect(270, 200, 500, 320); // Dibuja el recuadro con bordes redondeados
 
     fill(255); // Color del texto
     noStroke();
-    textSize(28);
+    textSize(20);
     textAlign(CENTER, CENTER);
     text(
-      "Tu árbol refleja tus elecciones.\nEste es un momento para reflexionar \nsobre qué áreas necesitan atención y \ncómo puedes comenzar a dar pequeños \npasos hacia el cambio. Recuerda que \ncada día es una nueva oportunidad \npara redescubrir tus valores, conectar \ncon tus emociones y avanzar hacia \nuna versión más plena de ti mismo. \nNo estás solo en este camino, \ny siempre puedes buscar apoyo \ncuando lo necesites.",
-      width / 2,
-      height / 2
+      "Tu árbol refleja tus elecciones.\n \nEste es un momento para reflexionar sobre \nqué áreas necesitan atención y cómo puedes \ncomenzar a dar pequeños pasos hacia el \ncambio. Recuerda que cada día es una nueva \noportunidad para redescubrir tus valores, \nconectar con tus emociones y avanzar \nhacia una versión más plena de ti mismo. \nNo estás solo en este camino, y siempre \npuedes buscar apoyo cuando lo necesites.",
+      520,
+      350
     );
 
     // Animar el confeti
@@ -172,9 +194,9 @@ function isFist(keypoints) {
 
 function handleYes() {
   if (decisionStep < messages.length) {
-    let yOffset = height - 200 - decisionStep * 80;
+    let yOffset = height - 120 - decisionStep * 50;
     tree.push({
-      x: width / 2 + 222, // Fija la posición de X a la derecha
+      x: width / 2 + 80, // Fija la posición de X a la derecha
       y: yOffset,
       image: random(branchImagesYes),
     });
@@ -184,9 +206,9 @@ function handleYes() {
 
 function handleNo() {
   if (decisionStep < messages.length) {
-    let yOffset = height - 200 - decisionStep * 80;
+    let yOffset = height - 120 - decisionStep * 50;
     tree.push({
-      x: width / 2 - 32, // Fija la posición de X a la izquierda
+      x: width / 2 - 40, // Fija la posición de X a la izquierda
       y: yOffset, // La Y cambia con cada decisión
       image: random(branchImagesNo),
     });
@@ -211,4 +233,8 @@ function mousePressed() {
   message =
     "Cada decisión que tomes hará crecer un árbol único. ¿Estás listo para comenzar?";
   tree = [];
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth * 0.8, windowHeight * 0.8); // Ajusta el tamaño del canvas cuando se cambia el tamaño de la ventana
 }
