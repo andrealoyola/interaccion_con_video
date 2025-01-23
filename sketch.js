@@ -132,7 +132,7 @@ function draw() {
     let topY = height - trunkHeight - 130; // Coloca la copa encima del tronco
 
     // Calcula la posición X para que esté centrada
-    let topX = width - 698 / 2 - topWidth;
+    let topX = width - 610 / 2 - topWidth;
 
     image(
       treeTopImage,
@@ -194,7 +194,7 @@ function isFist(keypoints) {
 
 function handleYes() {
   if (decisionStep < messages.length) {
-    let yOffset = height - 120 - decisionStep * 50;
+    let yOffset = height - 90 - decisionStep * 40;
     tree.push({
       x: width / 2 + 80, // Fija la posición de X a la derecha
       y: yOffset,
@@ -206,7 +206,7 @@ function handleYes() {
 
 function handleNo() {
   if (decisionStep < messages.length) {
-    let yOffset = height - 120 - decisionStep * 50;
+    let yOffset = height - 90 - decisionStep * 40;
     tree.push({
       x: width / 2 - 40, // Fija la posición de X a la izquierda
       y: yOffset, // La Y cambia con cada decisión
