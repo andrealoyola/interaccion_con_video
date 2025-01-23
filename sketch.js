@@ -62,7 +62,18 @@ function setup() {
 
 function draw() {
   background(255);
-  image(video, 0, 0, 500, 500);
+  image(video, 50, 50, 500, 500);
+  rect(50, 600, 500, 350);
+
+  fill(255, 0, 200); // Color del texto
+  noStroke();
+  textSize(24);
+  textAlign(CENTER, CENTER);
+  text(
+    "Reglas de la actividad: \nUsa movimientos de tus manos para responder las preguntas de forma interactiva.\nPara responder SI \nLevanta el pulgar 👍.\nPara responder NO \nCierra el puño ✊.",
+    250,
+    800
+  );
 
   // Muestra el texto en pantalla
   fill(0);
@@ -74,7 +85,7 @@ function draw() {
   // Dibuja la imagen del tronco en la base del lienzo
   let trunkWidth = trunkImage.width / 2; // Tamaño del tronco ajustado
   let trunkHeight = trunkImage.height;
-  image(trunkImage, width - 850 / 2 - trunkWidth / 2, height - trunkHeight);
+  image(trunkImage, width - 1069 / 2 - trunkWidth / 2, height - trunkHeight);
 
   // Dibuja las ramas
   for (let i = 0; i < tree.length; i++) {
@@ -92,6 +103,26 @@ function draw() {
     let topY = 0; // Borde superior del canvas
 
     image(treeTopImage, topX, topY);
+
+    // Mostrar el recuadro con el resultado
+    let boxWidth = 650;
+    let boxHeight = 300;
+    let boxX = width / 2 - boxWidth / 2;
+    let boxY = 550;
+
+    fill(151, 158, 200); // Color de fondo del recuadro
+    stroke(0);
+    rect(boxX, boxY, boxWidth, boxHeight, 10); // Dibuja el recuadro con bordes redondeados
+
+    fill(255); // Color del texto
+    noStroke();
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text(
+      "Gracias por participar.\nTu árbol refleja tus elecciones.\n¡Comparte tu experiencia!",
+      boxX + boxWidth / 2,
+      boxY + boxHeight / 2
+    );
   }
 }
 
