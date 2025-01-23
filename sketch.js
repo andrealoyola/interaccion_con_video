@@ -23,11 +23,14 @@ let decisionStep = 0;
 let decisionMade = false;
 let delayTime = 1000;
 let lastActionTime = 0;
+let confetti = []; // Array para las partículas de confeti
+let customFont;
 
 function preload() {
   handPose = ml5.handPose();
   trunkImage = loadImage("tronco.png"); // Carga la imagen del tronco
   treeTopImage = loadImage("top_branch.png"); // Carga la imagen de la copa del árbol
+  customFont = loadFont("fuente.ttf"); // Reemplaza con archivo fuente
 
   // Carga las imágenes de las ramas para "Sí"
   for (let i = 1; i <= 7; i++) {
@@ -58,6 +61,17 @@ function setup() {
   video.size(640, 480);
   video.hide();
   handPose.detectStart(video, gotHands);
+
+  // Crear partículas de confeti
+  for (let i = 0; i < 100; i++) {
+    confetti.push({
+      x: random(width),
+      y: random(-400, 0),
+      size: random(5, 10),
+      color: color(random(255), random(255), random(255)),
+      speed: random(1, 3),
+    });
+  }
 }
 
 function draw() {
@@ -65,24 +79,24 @@ function draw() {
   image(video, 50, 100, 500, 500);
   fill(237, 237, 254);
   rect(50, 650, 500, 300);
-  rect(50, 20, 820, 50);
 
-  fill(151, 158, 200); // Color del texto
+  fill(0); // Color del texto
   noStroke();
+  textFont(customFont); // Cambia el texto a la fuente personalizada
   textSize(22);
   textAlign(LEFT, CENTER);
   text(
-    "Reglas de la actividad: \nUsa movimientos de tus manos para \nresponder las preguntas de forma interactiva.\n \nPara responder SI \nLevanta el pulgar 👍.\n \nPara responder NO \nCierra el puño ✊.",
+    "Reglas de la actividad: \nUsa movimientos de tus manos para \nresponder las preguntas de forma interactiva.\n \nPara responder SI \nLevanta el pulgar.\n \nPara responder NO \nCierra el puño, hacia el frente los nudillos.",
     80,
     800
   );
 
   // Muestra el texto en pantalla
-  fill(0);
+  fill(64, 66, 64);
   noStroke();
-  textSize(22);
+  textSize(28);
   textAlign(LEFT);
-  text(message, 60, 45);
+  text(message, 60, 43);
 
   // Dibuja la imagen del tronco en la base del lienzo
   let trunkWidth = trunkImage.width / 2; // Tamaño del tronco ajustado
@@ -106,25 +120,33 @@ function draw() {
 
     image(treeTopImage, topX, topY);
 
-    // Mostrar el recuadro con el resultado
-    let boxWidth = 500;
-    let boxHeight = 300;
-    let boxX = width / 2;
-    let boxY = height / 2;
-
-    fill(151, 158, 200); // Color de fondo del recuadro
-    stroke(0);
-    rect(boxX, boxY, boxWidth, boxHeight, 10); // Dibuja el recuadro con bordes redondeados
+    fill(199, 0, 57); // Color de fondo del recuadro
+    rect(300, 250, 820, 500); // Dibuja el recuadro con bordes redondeados
 
     fill(255); // Color del texto
     noStroke();
-    textSize(32);
+    textSize(28);
     textAlign(CENTER, CENTER);
     text(
-      "Gracias por participar.\nTu árbol refleja tus elecciones.\n¡Comparte tu experiencia!",
-      boxX + boxWidth / 2,
-      boxY + boxHeight / 2
+      "Tu árbol refleja tus elecciones.\nEste es un momento para reflexionar \nsobre qué áreas necesitan atención y \ncómo puedes comenzar a dar pequeños \npasos hacia el cambio. Recuerda que \ncada día es una nueva oportunidad \npara redescubrir tus valores, conectar \ncon tus emociones y avanzar hacia \nuna versión más plena de ti mismo. \nNo estás solo en este camino, \ny siempre puedes buscar apoyo \ncuando lo necesites.",
+      width / 2,
+      height / 2
     );
+
+    // Animar el confeti
+    for (let i = 0; i < confetti.length; i++) {
+      let c = confetti[i];
+      fill(c.color);
+      noStroke();
+      ellipse(c.x, c.y, c.size, c.size);
+      c.y += c.speed;
+
+      // Reaparecer confeti que sale de la pantalla
+      if (c.y > height) {
+        c.y = random(-100, 0);
+        c.x = random(width);
+      }
+    }
   }
 }
 
