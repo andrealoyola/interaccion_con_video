@@ -62,25 +62,27 @@ function setup() {
 
 function draw() {
   background(255);
-  image(video, 50, 50, 500, 500);
-  rect(50, 600, 500, 350);
+  image(video, 50, 100, 500, 500);
+  fill(237, 237, 254);
+  rect(50, 650, 500, 300);
+  rect(50, 20, 820, 50);
 
-  fill(255, 0, 200); // Color del texto
+  fill(151, 158, 200); // Color del texto
   noStroke();
-  textSize(24);
-  textAlign(CENTER, CENTER);
+  textSize(22);
+  textAlign(LEFT, CENTER);
   text(
-    "Reglas de la actividad: \nUsa movimientos de tus manos para responder las preguntas de forma interactiva.\nPara responder SI \nLevanta el pulgar 👍.\nPara responder NO \nCierra el puño ✊.",
-    250,
+    "Reglas de la actividad: \nUsa movimientos de tus manos para \nresponder las preguntas de forma interactiva.\n \nPara responder SI \nLevanta el pulgar 👍.\n \nPara responder NO \nCierra el puño ✊.",
+    80,
     800
   );
 
   // Muestra el texto en pantalla
   fill(0);
   noStroke();
-  textSize(16);
-  textAlign(CENTER);
-  text(message, width / 2, 30);
+  textSize(22);
+  textAlign(LEFT);
+  text(message, 60, 45);
 
   // Dibuja la imagen del tronco en la base del lienzo
   let trunkWidth = trunkImage.width / 2; // Tamaño del tronco ajustado
@@ -105,10 +107,10 @@ function draw() {
     image(treeTopImage, topX, topY);
 
     // Mostrar el recuadro con el resultado
-    let boxWidth = 650;
+    let boxWidth = 500;
     let boxHeight = 300;
-    let boxX = width / 2 - boxWidth / 2;
-    let boxY = 550;
+    let boxX = width / 2;
+    let boxY = height / 2;
 
     fill(151, 158, 200); // Color de fondo del recuadro
     stroke(0);
@@ -116,7 +118,7 @@ function draw() {
 
     fill(255); // Color del texto
     noStroke();
-    textSize(24);
+    textSize(32);
     textAlign(CENTER, CENTER);
     text(
       "Gracias por participar.\nTu árbol refleja tus elecciones.\n¡Comparte tu experiencia!",
