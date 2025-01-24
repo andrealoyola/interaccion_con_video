@@ -1,4 +1,4 @@
-let handPose;
+let handPose; //permite identificar las poses de las manos
 let video;
 let hands = [];
 let branchImagesYes = []; // Imágenes para las ramas de "Sí"
